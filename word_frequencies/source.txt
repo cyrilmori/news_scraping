@@ -1,0 +1,7 @@
+Words frequency lists were downloaded from the online WordLex database.
+http://www.lexique.org/
+
+The website lexique.org and the Lexique database have been created, maintained, and developed since 1999 by Boris New and Christophe Pallier, with the support of INSERM, Université Savoie Mont Blanc (since 2013), CNRS, and Université Paris Descartes (until 2013).
+Jessica Bourgin (USMB) has carried out recent developments on the Shiny applications.
+
+© 2026 Lexique 
