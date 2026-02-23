@@ -36,7 +36,7 @@ class WebParser:
             print('No websites registered yet.')
         else:
             self.read_json()
-            print('The following websites are registered: ', *list(self.sites_dict.keys()))
+            print('The following websites are registered: ', list(self.sites_dict.keys()))
     
 
     #
@@ -44,27 +44,30 @@ class WebParser:
     #
 
     def save_json(self):
-        with io.open(self.json_file, 'a', encoding='utf-8') as f:
-            json.dumps(self.sites_dict, f, ensure_ascii=False, indent=4, sort_keys=True)
+        with io.open(self.json_file, 'w', encoding='utf-8') as f:
+            json.dump(self.sites_dict, f, ensure_ascii=False, indent=4, sort_keys=True)
 
 
     def read_json(self):
-        with io.open(self.json_file, 'a', encoding='utf-8') as f:
+        with io.open(self.json_file, 'r', encoding='utf-8') as f:
             self.sites_dict = json.load(f)
 
 
     def add_site(self, url, desc='', rss_list=[], scrape_list=[], auto_save=True):
         site_name = url.split('.')[1]
-        self.sites_dict.update({
-            site_name: {
-                'url': url,
-                'desc': desc,
-                'rss_urls': rss_list,
-                'scrape_classes': scrape_list,
-            }
-        })
-        if auto_save:
-            self.save_json()
+        if not (site_name in list(self.sites_dict.keys())):
+            self.sites_dict.update({
+                site_name: {
+                    'url': url,
+                    'desc': desc,
+                    'rss_urls': rss_list,
+                    'scrape_classes': scrape_list,
+                }
+            })
+            if auto_save:
+                self.save_json()
+        else:
+            print('Site is already saved, call update_site() instead.')
     
 
     def update_site(self, name, key, value, auto_save=True):
@@ -79,17 +82,17 @@ class WebParser:
     
     def snapshot_site(self, site_name):
         # Take a snapshot of a website to test the scraping
-        url_str = self.sites_dict[site_name]
+        url_str = self.sites_dict[site_name]['url']
         r = requests.get(url_str, auth=('user', 'pass'))
         html_code = r.content.decode('utf')
         self.snapshot_soup = BeautifulSoup(html_code, 'html.parser')
 
 
     def view_in_browser(self):
-        html = str(self.snapshot_soup)
+        html = str(self.snapshot_soup.prettify(formatter='html')).encode()
         with NamedTemporaryFile("wb", delete=False, suffix=".html") as file:
             file.write(html)
-        webbrowser.open_new_tab(f"file://{file.name}")
+        webbrowser.open_new(f"file://{file.name}")
 
 
     def highlight_titles(self, class_list):
@@ -101,56 +104,47 @@ class WebParser:
         return new_soup
 
 
-# ## Tag selection containing given strings
+    #
+    # Tag selection containing given strings
+    #
 
-# def count_children(main_tag):
-#     return len(main_tag.find_all())
-
-# def find_childmost_tags(main_tag):
-#     child_list = []
-#     for tag in main_tag.find_all():
-#         if count_children(tag) == 0:
-#             child_list.append(tag)
-#     return child_list
-
-# def find_childmost_with_text(main_tag):
-#     child_list = find_childmost_tags(main_tag)
-#     tags_with_text = []
-#     for tag in child_list:
-#         if tag.text != '':
-#             tags_with_text.append(tag)
-#     return tags_with_text
-
-# def first_parent_with_class(main_tag):
-#     temp_tag = main_tag
-#     while temp_tag.has_attr('class') == False:
-#         temp_tag = temp_tag.parent
-#     return temp_tag
-
-# def get_class_with_string(tags_with_text_list, sample_str, conflict_index=0):
-#     tag_list = []
-#     for tag in tags_with_text_list:
-#         if sample_str in tag.text:
-#             tag_list.append(tag)
-#     if len(tag_list) == 0:
-#         print("Warning: no matches found for the given string: ", sample_str)
-#         return 0
-#     elif len(tag_list) > 1:
-#         print("Warning: several matches with the given string: ", sample_str)
-#         selected_tag = tag_list[conflict_index]
-#     else:
-#         selected_tag = tag_list[0]
-#     tag_with_class = first_parent_with_class(selected_tag)
-#     return tag_with_class.attrs['class'][0]
-
-# def get_classes_with_strings(tags_with_text_list, string_list, conflict_index=0):
-#     class_list = []
-#     for sample_str in string_list:
-#         class_list.append(get_class_with_string(tags_with_text_list, sample_str, conflict_index=conflict_index))
-#     return class_list
+    def count_children(self, main_tag):
+        return len(main_tag.find_all())
 
 
-# ## Scrape titles from different sites
+    def find_childmost_with_text(self, main_tag):
+        child_list = []
+        for tag in main_tag.find_all():
+            if self.count_children(tag) == 0 and tag.text != '':
+                child_list.append(tag)
+        return child_list
+
+
+    def print_parents_with_class(self, main_tag):
+        temp_tag = main_tag
+        while temp_tag.text == main_tag.text:
+            if temp_tag.has_attr('class'):
+                print(temp_tag.attrs['class'])
+            temp_tag = temp_tag.parent
+
+
+    def print_classes_from_string(self, sample_str):
+        n_matches = 0
+        tags_with_text_list = self.find_childmost_with_text(self.snapshot_soup)
+        for tag in tags_with_text_list:
+            if sample_str in tag.text:
+                self.print_parents_with_class(tag, '\n')
+                n_matches += 1
+        if n_matches == 0:
+            print("Warning: no matches found for the given string: ", sample_str)
+            return 0
+        elif n_matches > 1:
+            print("Warning: ", str(n_matches), " matches with the given string: ", sample_str)
+
+
+# #
+# # Scrape titles from different sites
+# #
 
 
 # def get_strings_from_class(soup, class_str):
@@ -172,3 +166,20 @@ class WebParser:
 #         all_titles_list = all_titles_list + [titles_list]
 #     return all_titles_list
 
+
+
+
+
+if __name__ == "__main__":
+    parser = WebParser('Fre')
+    parser.add_site(
+        url = 'https://www.lemonde.fr/',
+        desc = '',
+        rss_list = [
+            'https://www.lemonde.fr/rss/une.xml',
+            'https://www.lemonde.fr/international/rss_full.xml',
+        ],
+        scrape_list = []
+    ) 
+    parser.snapshot_site('lemonde')
+    parser.view_in_browser()
