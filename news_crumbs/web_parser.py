@@ -20,6 +20,9 @@ class WebParser:
     json_file = ''
     sites_dict = {}
     snapshot_soup = None
+    scraped_dict = {}
+    rss_feeds_dict = {}
+    
     
     def __init__(self, lang):
         self.available_langs = [file.split('.')[0] for file in os.listdir('.\\word_frequencies\\')]
@@ -74,6 +77,15 @@ class WebParser:
         self.sites_dict[name][key] = value
         if auto_save:
             self.save_json()
+    
+
+    def add_site_scrape_class(self, site_name, class_name, auto_save=True):
+        if not class_name in self.sites_dict[site_name]['scrape_classes']:
+            self.sites_dict[site_name]['scrape_classes'].append(class_name)
+        else:
+            print('Class is already saved.')
+        if auto_save:
+            self.save_json()
 
 
     #
@@ -89,19 +101,18 @@ class WebParser:
 
 
     def view_in_browser(self):
-        html = str(self.snapshot_soup.prettify(formatter='html')).encode()
+        html = str(self.snapshot_soup)
         with NamedTemporaryFile("wb", delete=False, suffix=".html") as file:
-            file.write(html)
-        webbrowser.open_new(f"file://{file.name}")
+            file.write(html.encode('utf'))
+        webbrowser.open(f"file://{file.name}")
 
 
-    def highlight_titles(self, class_list):
+    def highlight_title(self, class_str):
         new_soup = copy.deepcopy(self.snapshot_soup)
-        for class_str in class_list:
-            for tag in new_soup.find_all(class_=class_str):
-                strike_tag = new_soup.new_tag('s')
-                tag.wrap(strike_tag)
-        return new_soup
+        for tag in new_soup.find_all(class_=class_str):
+            strike_tag = new_soup.new_tag('s')
+            tag.wrap(strike_tag)
+        self.snapshot_soup = new_soup
 
 
     #
@@ -133,7 +144,7 @@ class WebParser:
         tags_with_text_list = self.find_childmost_with_text(self.snapshot_soup)
         for tag in tags_with_text_list:
             if sample_str in tag.text:
-                self.print_parents_with_class(tag, '\n')
+                self.print_parents_with_class(tag)
                 n_matches += 1
         if n_matches == 0:
             print("Warning: no matches found for the given string: ", sample_str)
@@ -142,29 +153,47 @@ class WebParser:
             print("Warning: ", str(n_matches), " matches with the given string: ", sample_str)
 
 
-# #
-# # Scrape titles from different sites
-# #
+    def get_strings_from_class(self, class_str):
+        tags_list = self.snapshot_soup.find_all(class_=class_str)
+        return [{'title': tag.text} for tag in tags_list]
 
 
-# def get_strings_from_class(soup, class_str):
-#     tags_list = soup.find_all(class_=class_str)
-#     string_list = []
-#     for tag in tags_list:
-#         if len(tag.text.split()) > MIN_WORDS_IN_TITLE:
-#             string_list.append(format_title_string(tag.text))
-#     return string_list
+    def scrape_all_news(self):
+        titles_dict = {}
+        for site_name in list(self.sites_dict.keys()):
+            self.snapshot_site(site_name)
+            titles_list = []
+            for class_str in self.sites_dict[site_name]['scrape_classes']:
+                titles_list = titles_list + self.get_strings_from_class(class_str)
+            titles_dict.update({site_name: titles_list})
+        self.scraped_dict = titles_dict
+        return titles_dict
+    
 
-# def scrape_all_news(list_names, list_url, list_news_classes):
-#     all_titles_list = []
-#     for url, class_list in zip(list_url, list_news_classes):
-#         soup = get_website_soup(url)
-#         titles_list = []
-#         for class_str in class_list:
-#             list_tags = get_strings_from_class(soup, class_str)
-#             titles_list = titles_list + list_tags
-#         all_titles_list = all_titles_list + [titles_list]
-#     return all_titles_list
+    #
+    # RSS feeds
+    #
+
+    def get_rss(self, site_name):
+        rss_urls = self.sites_dict[site_name]['rss_urls']
+        feed_list = []
+        for url in rss_urls:
+            d = feedparser.parse(url)
+            if not self.sites_dict[site_name]['desc']:
+                self.update_site(site_name, 'desc', d.feed.title)
+            feed_list = feed_list + [{
+                'title': entry.title,
+                'desc': entry.description,
+            } for entry in d.entries]
+        return feed_list
+    
+    
+    def get_all_rss(self):
+        rss_dict = {}
+        for site_name in list(self.sites_dict.keys()):
+            feed_list = self.get_rss(site_name)
+            rss_dict.update({site_name: feed_list})
+        return rss_dict
 
 
 
@@ -172,6 +201,8 @@ class WebParser:
 
 if __name__ == "__main__":
     parser = WebParser('Fre')
+    
+    ## Add website
     parser.add_site(
         url = 'https://www.lemonde.fr/',
         desc = '',
@@ -182,4 +213,15 @@ if __name__ == "__main__":
         scrape_list = []
     ) 
     parser.snapshot_site('lemonde')
-    parser.view_in_browser()
+    # parser.view_in_browser()
+
+    ## Scraping
+    parser.print_classes_from_string('Laurence des Cars')
+    parser.highlight_title('article__title')
+    # parser.view_in_browser()
+    parser.add_site_scrape_class('lemonde', 'article__title')
+    scraped_titles = parser.scrape_all_news()['lemonde']
+
+    ## RSS feeds
+    parser.get_rss('lemonde')
+    print( parser.get_all_rss() )

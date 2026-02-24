@@ -1,11 +1,14 @@
 {
     "lemonde": {
-        "desc": "",
+        "desc": "Le Monde.fr - Actualités et Infos en France et dans le monde",
         "rss_urls": [
             "https://www.lemonde.fr/rss/une.xml",
             "https://www.lemonde.fr/international/rss_full.xml"
         ],
-        "scrape_classes": [],
+        "scrape_classes": [
+            "article__title-label",
+            "article__title"
+        ],
         "url": "https://www.lemonde.fr/"
     }
 }
