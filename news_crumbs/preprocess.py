@@ -15,14 +15,15 @@ def separate_subexpressions(string):
     list_markers = ',\.:;"!\?\\/#。，“”．…、«»¿¡\(\)\[\]\{\}—'   # most common Latin punctuation chars
     regex_str = '['+list_markers+']+'
     list_sentences = re.split(regex_str, string)
-    return list_sentences
+    filtered_list = list( filter(lambda x: len(x)>0, list_sentences) ) # remove empty lists
+    return filtered_list
 
 
 def tokenize_sentence(sentence):
     word_separators = '‘’\'\s\-–'
     regex_str = '[' + word_separators + ']+'
     list_words = re.split(regex_str, sentence)
-    filtered_list = list( filter(lambda x: len(x)>0, list_words) )
+    filtered_list = list( filter(lambda x: len(x)>0, list_words) ) # remove empty lists
     return filtered_list
 
 
@@ -44,9 +45,10 @@ def process_raw_string(string, vector):
     double_list_words = []
     for sub_sentence in sentences:
         tokenized = tokenize_sentence(sub_sentence)
-        vector, converted = convert_sentence_to_indices(vector, tokenized)
+        converted, vector = convert_sentence_to_indices(tokenized, vector)
         double_list_words.append(converted)
-    return double_list_words, vector
+    filtered = list( filter(lambda x: len(x)>0, double_list_words) ) # remove empty lists
+    return filtered, vector
 
 
 def process_site_data(site_dict_list, vector):
@@ -55,7 +57,6 @@ def process_site_data(site_dict_list, vector):
         proc_item_dict = {}
         for key in list(item_dict.keys()):
             proc_string, vector = process_raw_string(item_dict[key], vector)
-            print(proc_string)
             proc_item_dict.update({key: proc_string})
         processed_list.append(proc_item_dict)
     return processed_list, vector
@@ -96,7 +97,9 @@ if __name__ == '__main__':
                                  {'title': 'Les pays de l’UE pourront financer avec des fonds européens des avortements dans des pays où la législation est contraignante', 'desc': 'Cette mesure a été votée en réponse à une pétition signée par plus d’1\xa0million de personnes et réclamant des financements pour des avortements «\xa0sûrs\xa0».'}]}
     vector = []
     processed_list, vector = process_site_data(test_rss_dict['lemonde'], vector)
+    print(len(processed_list))
     print(processed_list)
+    print(vector)
 
 
 
