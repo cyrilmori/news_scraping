@@ -225,3 +225,4 @@ if __name__ == "__main__":
     ## RSS feeds
     parser.get_rss('lemonde')
     print( parser.get_all_rss() )
+
