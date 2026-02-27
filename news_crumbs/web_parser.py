@@ -204,25 +204,24 @@ if __name__ == "__main__":
     
     ## Add website
     parser.add_site(
-        url = 'https://www.lemonde.fr/',
+        url = 'https://www.mediapart.fr/',
         desc = '',
         rss_list = [
-            'https://www.lemonde.fr/rss/une.xml',
-            'https://www.lemonde.fr/international/rss_full.xml',
+            'https://www.mediapart.fr/articles/feed',
         ],
         scrape_list = []
     ) 
-    parser.snapshot_site('lemonde')
+    parser.snapshot_site('mediapart')
     # parser.view_in_browser()
 
-    ## Scraping
-    parser.print_classes_from_string('Laurence des Cars')
-    parser.highlight_title('article__title')
-    # parser.view_in_browser()
-    parser.add_site_scrape_class('lemonde', 'article__title')
-    scraped_titles = parser.scrape_all_news()['lemonde']
+    # ## Scraping
+    # parser.print_classes_from_string('Laurence des Cars')
+    # parser.highlight_title('article__title')
+    # # parser.view_in_browser()
+    # parser.add_site_scrape_class('lemonde', 'article__title')
+    # scraped_titles = parser.scrape_all_news()['lemonde']
 
     ## RSS feeds
-    parser.get_rss('lemonde')
+    parser.get_rss('mediapart')
     print( parser.get_all_rss() )
 
