@@ -62,6 +62,14 @@ def process_site_data(site_dict_list, vector):
     return processed_list, vector
             
 
+def process_data_all_sites(sites_dict):
+    processed_dict = {}
+    vector = []
+    for site_name in list(sites_dict.keys()):
+        processed_list, vector = process_site_data(sites_dict[site_name], vector)
+        processed_dict.update({site_name: processed_list})
+    return processed_dict, vector
+        
 
 
 
@@ -95,10 +103,9 @@ if __name__ == '__main__':
                                  {'title': 'Affaire Epstein\xa0: Hillary Clinton demande devant une commission d’enquête parlementaire que Donald Trump témoigne «\xa0sous serment\xa0»', 'desc': 'La déposition à huis clos d’Hillary Clinton se tient à Chappaqua, près de New York, où réside le couple Clinton. Son époux, photographié plusieurs fois en compagnie de Jeffrey Epstein, doit témoigner vendredi, au même endroit.'}, 
                                  {'title': 'En Turquie, Recep Tayyip Erdogan qualifie de «\xa0fanatiques\xa0» les signataires d’une pétition pour la défense de la laïcité', 'desc': 'Signée par 168\xa0intellectuels, artistes et représentants d’associations professionnelles, la pétition critique une directive du ministère turc de l’éducation nationale recommandant notamment d’emmener à la mosquée les enfants de 4\xa0à 6\xa0ans, accompagnés de leurs enseignants.'}, 
                                  {'title': 'Les pays de l’UE pourront financer avec des fonds européens des avortements dans des pays où la législation est contraignante', 'desc': 'Cette mesure a été votée en réponse à une pétition signée par plus d’1\xa0million de personnes et réclamant des financements pour des avortements «\xa0sûrs\xa0».'}]}
-    vector = []
-    processed_list, vector = process_site_data(test_rss_dict['lemonde'], vector)
-    print(len(processed_list))
-    print(processed_list)
+
+    processed_dict, vector = process_data_all_sites(test_rss_dict)
+    print(processed_dict)
     print(vector)
 
 
