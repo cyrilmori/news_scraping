@@ -194,34 +194,3 @@ class WebParser:
             feed_list = self.get_rss(site_name)
             rss_dict.update({site_name: feed_list})
         return rss_dict
-
-
-
-
-
-if __name__ == "__main__":
-    parser = WebParser('Fre')
-    
-    ## Add website
-    parser.add_site(
-        url = 'https://www.mediapart.fr/',
-        desc = '',
-        rss_list = [
-            'https://www.mediapart.fr/articles/feed',
-        ],
-        scrape_list = []
-    ) 
-    parser.snapshot_site('mediapart')
-    # parser.view_in_browser()
-
-    # ## Scraping
-    # parser.print_classes_from_string('Laurence des Cars')
-    # parser.highlight_title('article__title')
-    # # parser.view_in_browser()
-    # parser.add_site_scrape_class('lemonde', 'article__title')
-    # scraped_titles = parser.scrape_all_news()['lemonde']
-
-    ## RSS feeds
-    parser.get_rss('mediapart')
-    print( parser.get_all_rss() )
-
