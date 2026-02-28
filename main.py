@@ -1,6 +1,7 @@
 from news_crumbs.web_parser import WebParser
 from news_crumbs.preprocess import process_data_all_sites
 from news_crumbs.compare import flatten_all_sites, get_common_words, get_word_freq_from_lexicon, filter_only_keywords
+from news_crumbs.compare_nlp import translate_word_list, filter_keywords_nlp
 
 
 
@@ -53,6 +54,16 @@ flat_dict = flatten_all_sites(processed_dict)
 common_words, common_freqs = get_common_words(vector, flat_dict)
 lexic_freq = get_word_freq_from_lexicon('Fre', common_words)
 keywords = filter_only_keywords(common_words, lexic_freq, common_freqs)
+# print(keywords)
 
-print(keywords)
+
+
+
+#
+# NLP version in English
+#
+
+trans_word_list = translate_word_list(keywords)
+trans_keywords = filter_keywords_nlp(trans_word_list)
+print(trans_keywords)
 

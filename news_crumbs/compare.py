@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 
-HIGH_LEXIC_FREQ = 1000
+HIGH_LEXIC_FREQ = 10000
 HIGH_OCCURENCES = 100
-MIN_WORD_LEN = 4
+MIN_WORD_LEN = 2
 PATH_FREQS = ".\\word_frequencies\\"
 
 
