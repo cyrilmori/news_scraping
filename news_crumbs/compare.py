@@ -1,5 +1,10 @@
 import numpy as np
+import pandas as pd
 
+HIGH_LEXIC_FREQ = 1000
+HIGH_OCCURENCES = 4
+MIN_WORD_LEN = 4
+PATH_FREQS = ".\\word_frequencies\\"
 
 
 def flatten_site_data(site_list):
@@ -46,6 +51,30 @@ def get_common_words(word_vector, freq_vector):
     return common_words, common_freqs
 
 
+def get_word_freq_from_lexicon(lang, word_list, chosen_col='BlogFreq'):
+    print('Fetching word frequencies...')
+    file_name = PATH_FREQS + lang + '.Freq.3.Hun.txt'
+    freq_df = pd.read_csv(file_name, delimiter='\t', index_col='Word', usecols=['Word', chosen_col])
+    word_freq_list = []
+    for word in word_list:
+        if word in list(freq_df.index):
+            word_freq_list.append(int(freq_df.loc[word][chosen_col]))
+        else:
+            word_freq_list.append(-1)
+    return word_freq_list
+
+
+def filter_only_keywords(word_list, lexic_freq_list, sites_freq):
+    keyword_list = []
+    for word, freq, site_f_vec in zip(word_list, lexic_freq_list, sites_freq):
+        if len(word) >= MIN_WORD_LEN and \
+                freq < HIGH_LEXIC_FREQ and \
+                sum([f < HIGH_OCCURENCES for f in site_f_vec]):
+            keyword_list.append(word)
+    return keyword_list
+        
+
+
 
 
 if __name__ == '__main__':
@@ -55,7 +84,10 @@ if __name__ == '__main__':
     flat_dict = flatten_all_sites(dict_processed)
     freq_vec = find_common_words(flat_dict, vector)
     common_words, common_freqs = get_common_words(vector, freq_vec)
-    print(common_words, common_freqs)
-
+    # print(common_words, common_freqs)
+    lexic_freq = get_word_freq_from_lexicon('Fre', common_words)
+    # print(lexic_freq)
+    keywords = filter_only_keywords(common_words, lexic_freq, common_freqs)
+    print(keywords)
 
 
