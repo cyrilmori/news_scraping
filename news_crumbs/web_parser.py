@@ -80,12 +80,26 @@ class WebParser:
     
 
     def add_site_scrape_class(self, site_name, class_name, auto_save=True):
-        if not class_name in self.sites_dict[site_name]['scrape_classes']:
-            self.sites_dict[site_name]['scrape_classes'].append(class_name)
+        if site_name in list(self.sites_dict.keys()):
+            if not class_name in self.sites_dict[site_name]['scrape_classes']:
+                self.sites_dict[site_name]['scrape_classes'].append(class_name)
+            else:
+                print('Class is already saved.')
+            if auto_save:
+                self.save_json()
         else:
-            print('Class is already saved.')
-        if auto_save:
-            self.save_json()
+            print('Site name not registered!')
+    
+
+    def add_rss(self, site_name, rss_url):
+        if site_name in list(self.sites_dict.keys()):
+            if rss_url in self.sites_dict[site_name]['rss_urls']:
+                print('RSS URL is already saved.')
+            else:
+                self.sites_dict[site_name]['rss_urls'].append(rss_url)
+                self.save_json()
+        else:
+            print('Site name not registered!')
 
 
     #
@@ -176,15 +190,19 @@ class WebParser:
 
     def get_rss(self, site_name):
         rss_urls = self.sites_dict[site_name]['rss_urls']
+        temp_list_titles = []
         feed_list = []
         for url in rss_urls:
             d = feedparser.parse(url)
             if not self.sites_dict[site_name]['desc']:
                 self.update_site(site_name, 'desc', d.feed.title)
-            feed_list = feed_list + [{
-                'title': entry.title,
-                'desc': entry.description,
-            } for entry in d.entries]
+            for entry in d.entries:
+                if not entry.title in temp_list_titles:
+                    feed_list = feed_list + [{
+                        'title': entry.title,
+                        'desc': entry.description,
+                    }]
+                    temp_list_titles.append(entry.title)
         return feed_list
     
     

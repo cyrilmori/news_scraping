@@ -1,8 +1,17 @@
 {
+    "france24": {
+        "desc": "France 24 - Infos, news & actualités - L'information internationale en direct",
+        "rss_urls": [
+            "https://www.france24.com/fr/rss"
+        ],
+        "scrape_classes": [],
+        "url": "https://www.france24.com/fr/"
+    },
     "lemonde": {
         "desc": "Le Monde.fr - Actualités et Infos en France et dans le monde",
         "rss_urls": [
-            "https://www.lemonde.fr/rss/une.xml"
+            "https://www.lemonde.fr/rss/une.xml",
+            "https://www.lemonde.fr/international/rss_full.xml"
         ],
         "scrape_classes": [
             "article__title-label",

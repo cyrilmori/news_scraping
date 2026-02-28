@@ -12,17 +12,18 @@ parser = WebParser('Fre')
 
 ## Add website
 parser.add_site(
-    url = 'https://www.mediapart.fr/',
+    url = 'https://www.france24.com/fr/',
     desc = '',
     rss_list = [
-        'https://www.mediapart.fr/articles/feed',
+        'https://www.france24.com/fr/rss',
     ],
     scrape_list = []
 ) 
-parser.snapshot_site('mediapart')
-# parser.view_in_browser()
+# parser.add_rss('lemonde', 'https://www.lemonde.fr/international/rss_full.xml')
 
 # ## Scraping
+# parser.snapshot_site('mediapart')
+# parser.view_in_browser()
 # parser.print_classes_from_string('Laurence des Cars')
 # parser.highlight_title('article__title')
 # # parser.view_in_browser()
