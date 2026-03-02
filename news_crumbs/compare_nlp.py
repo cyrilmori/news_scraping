@@ -51,19 +51,42 @@ def translate_all_titles(sites_dict):
     return concat_titles_dict
 
 
-def translate_all_text(sites_dict):
+def concat_all_text(sites_dict):
     concat_titles_dict = {}
     for site_name in list(sites_dict.keys()):
         concat_titles_list = ['']
-        for item in sites_dict[site_name]:
-            for text_type in list(item.keys()):
-                text_str = item[text_type]
-                if len(concat_titles_list[-1]) + len(text_str) >= 5000:
-                    concat_titles_list.append('')
-                concat_titles_list[-1] += '. ' + text_str
-        print('Count of characters for ' + site_name + ': ' + str( [len(s) for s in concat_titles_list] ))
-        concat_titles_dict.update({site_name: translate_word_list(concat_titles_list)})
+        for i_art in range(len(sites_dict[site_name])):
+            item = sites_dict[site_name][i_art]
+            all_text = '$'.join(list(item.values()))
+            all_text = re.sub('\n', ' ', all_text)
+            all_text = re.sub('\$', '. \n', all_text)
+            if len(concat_titles_list[-1]) + len(all_text) >= 5000:
+                concat_titles_list.append('')
+            block_pointer, text_pointer = len(concat_titles_list)-1, len(concat_titles_list[-1])
+            concat_titles_list[-1] += '\n\n' + all_text
+        concat_titles_dict.update({site_name: concat_titles_list})
     return concat_titles_dict
+
+
+def deconcat_all_text(concat_dict):
+    deconcat_dict = {}
+    for site_name in list(concat_dict.keys()):
+        text_list = []
+        for block in concat_dict[site_name]:
+            article_list = block.split('\n\n')
+            for i in range(len(article_list)):
+                split_article = article_list[i].split('\n')
+                text_list.append(split_article)
+        deconcat_dict.update({site_name: text_list})
+    return deconcat_dict
+    
+
+def translate_all_text(sites_dict):
+    concat_titles_dict = concat_all_text(sites_dict)
+    transl_dict = {}
+    for site_name in list(sites_dict.keys()):
+        transl_dict.update({site_name: translate_word_list(concat_titles_dict[site_name])})
+    return transl_dict
 
 
 def filter_keywords_nlp(word_list):
@@ -108,5 +131,20 @@ def find_common_keywords(keyword_dict):
             common_words.append(word_vector[i])
     return common_words
 
+
+def find_articles_with_keywords(transl_dict, keyword_list):
+    deconcat_dict = deconcat_all_text(transl_dict)
+    article_indexes_dict = {}
+    list_site_names = list(deconcat_dict.keys())
+    for site_name in list_site_names:
+        article_list = deconcat_dict[site_name]
+        article_indexes_dict.update({site_name: np.zeros((len(article_list), len(keyword_list)))})
+        for i_art in range(len(article_list)):
+            text = '. '.join(article_list[i_art])
+            for j_keyword in range(len(keyword_list)):
+                keyword = keyword_list[j_keyword]
+                if keyword in text:
+                    article_indexes_dict[site_name][i_art, j_keyword] = 1
+    return article_indexes_dict
 
 

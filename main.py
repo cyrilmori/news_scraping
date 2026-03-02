@@ -1,7 +1,7 @@
 from news_crumbs.web_parser import WebParser
 from news_crumbs.preprocess import process_data_all_sites
 from news_crumbs.compare import flatten_all_sites, get_common_words, get_word_freq_from_lexicon, filter_only_keywords
-from news_crumbs.compare_nlp import translate_all_text, filter_keywords_all_sites, find_common_keywords
+from news_crumbs.compare_nlp import translate_all_text, filter_keywords_all_sites, find_common_keywords, find_articles_with_keywords, deconcat_all_text
 
 
 
@@ -66,4 +66,5 @@ rss_dict = parser.get_all_rss()
 trans_title_dict = translate_all_text(rss_dict)
 trans_keywords = filter_keywords_all_sites(trans_title_dict)
 common_keywords = find_common_keywords(trans_keywords)
-print(common_keywords)
+keyword_occurences = find_articles_with_keywords(trans_title_dict, common_keywords)
+print(keyword_occurences)
