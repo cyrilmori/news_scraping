@@ -34,7 +34,9 @@ import re
 
 
 def translate_word_list(word_list):
-    translated = GoogleTranslator(source='auto', target='en').translate_batch(word_list)   # around 10 words of 1000 chars correspond to ~3.3s and around 3.5s for 4999 (MAX) chars
+    # around 10 words of 1000 chars correspond to ~3.3s and around 3.5s for 4999 (MAX) chars
+    # note that for simplified chines, the MAX becomes 1953 chars so we take batches of 1000 as precaution
+    translated = GoogleTranslator(source='auto', target='en').translate_batch(word_list)   
     return translated
 
 
@@ -44,7 +46,7 @@ def translate_all_titles(sites_dict):
         concat_titles_list = ['']
         for i in range(len(sites_dict[site_name])):
             title_str = sites_dict[site_name][i]['title']
-            if len(concat_titles_list[-1]) + len(title_str) >= 5000:
+            if len(concat_titles_list[-1]) + len(title_str) >= 1000:
                 concat_titles_list.append('')
             concat_titles_list[-1] += '. ' + title_str
         concat_titles_dict.update({site_name: translate_word_list(concat_titles_list)})
@@ -60,7 +62,7 @@ def concat_all_text(sites_dict):
             all_text = '$'.join(list(item.values()))
             all_text = re.sub('\n', ' ', all_text)
             all_text = re.sub('\$', '. \n', all_text)
-            if len(concat_titles_list[-1]) + len(all_text) >= 5000:
+            if len(concat_titles_list[-1].encode('utf')) + len(all_text.encode('utf')) >= 2500:
                 concat_titles_list.append('')
             block_pointer, text_pointer = len(concat_titles_list)-1, len(concat_titles_list[-1])
             concat_titles_list[-1] += '\n\n' + all_text

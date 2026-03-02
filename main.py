@@ -20,6 +20,14 @@ parser.add_site(
     ],
     scrape_list = []
 ) 
+# parser.add_site(
+#     url = 'https://cn.chinadaily.com.cn/',
+#     desc = '',
+#     rss_list = [
+#         'https://covid-19.chinadaily.com.cn/rss_c/zgzx.xml',
+#     ],
+#     scrape_list = []
+# )
 # parser.add_rss('lemonde', 'https://www.lemonde.fr/international/rss_full.xml')
 
 # ## Scraping
@@ -68,3 +76,4 @@ trans_keywords = filter_keywords_all_sites(trans_title_dict)
 common_keywords = find_common_keywords(trans_keywords)
 keyword_occurences = find_articles_with_keywords(trans_title_dict, common_keywords)
 print(keyword_occurences)
+
