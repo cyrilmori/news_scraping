@@ -75,5 +75,6 @@ trans_title_dict = translate_all_text(rss_dict)
 trans_keywords = filter_keywords_all_sites(trans_title_dict)
 common_keywords = find_common_keywords(trans_keywords)
 keyword_occurences = find_articles_with_keywords(trans_title_dict, common_keywords)
+print(common_keywords)
 print(keyword_occurences)
 
