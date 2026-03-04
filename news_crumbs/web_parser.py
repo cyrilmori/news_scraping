@@ -56,8 +56,9 @@ class WebParser:
             self.sites_dict = json.load(f)
 
 
-    def add_site(self, url, desc='', rss_list=[], scrape_list=[], auto_save=True):
-        site_name = url.split('.')[1]
+    def add_site(self, url, site_name='', desc='', category='', rss_list=[], scrape_list=[], auto_save=True):
+        if not site_name:
+            site_name = url.split('.')[1]
         if not (site_name in list(self.sites_dict.keys())):
             self.sites_dict.update({
                 site_name: {
@@ -65,12 +66,15 @@ class WebParser:
                     'desc': desc,
                     'rss_urls': rss_list,
                     'scrape_classes': scrape_list,
+                    'category': category,
                 }
             })
             if auto_save:
                 self.save_json()
+            return site_name
         else:
             print('Site is already saved, call update_site() instead.')
+            return 0
     
 
     def update_site(self, name, key, value, auto_save=True):

@@ -1,5 +1,5 @@
 import argparse
-
+from news_crumbs.interface import Interface
 
 '''
 LIST OF FUNCTIONALITIES:
@@ -9,7 +9,7 @@ newscrumbs
         display [name]
         show [name]
         add [url] --name --desc --category (display autoname)
-        edit --name --desc --category
+        edit name --newname --desc --category
     rss
         list [site]
         add [site] [rss_url]
@@ -204,8 +204,53 @@ def main(command_line=None):
     keyword_show.add_argument('-d', '--description', type=str, help = 'Print also articles\' descriptions instead of just titles.')
 
 
-
     args = parser.parse_args(command_line)
+    interface = Interface()
+    match args.object:
+        case 'site':
+            match args.action:
+                case 'list':
+                    interface.site_list(args.details)
+                case 'display':
+                    interface.site_display(args.name)
+                case 'show':
+                    interface.site_show(args.name)
+                case 'add':
+                    interface.site_add(args.url, args.name, args.description, args.category)
+                case 'edit':
+                    interface.site_edit(args.name, args.newname, args.description, args.category)
+
+        case 'rss':
+            match args.action:
+                case 'list':
+                    print('rss list')
+                case 'add':
+                    print('rss add')
+                case 'test':
+                    print('rss test')
+
+        case 'scrape':
+            match args.action:
+                case 'list':
+                    print('scrape list')
+                case 'display':
+                    print('scrape display')
+                case 'test':
+                    print('scrape test')
+                case 'add':
+                    print('scrape add')
+                case 'find':
+                    print('scrape find')
+
+        case 'keyword':
+            match args.action:
+                case 'list':
+                    print('keyword list')
+                case 'get':
+                    print('keyword get')
+                case 'show':
+                    print('keyword show')
+
 
 
 
