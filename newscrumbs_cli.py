@@ -109,6 +109,7 @@ def main(command_line=None):
     )
     rss_add.add_argument('site', type=str, help = 'Name of the chosen website.')
     rss_add.add_argument('url', type=str, help = 'URL of the RSS flux to be added.')
+    rss_add.add_argument('-d', '--setdesc', action='store_true', help = 'Set the site description to this RSS description.')
 
     # test
     rss_test = rss_subparsers.add_parser(
@@ -116,7 +117,9 @@ def main(command_line=None):
         help = 'Test RSS flux for a given website.'
     )
     rss_test.add_argument('site', type=str, help = 'Name of the chosen website.')
-    rss_test.add_argument('-i', '--index', type=str, help = 'Index of the RSS if a single one is to be tested.')
+    rss_test.add_argument('-u', '--url', type=str, help = 'URL of the RSS if a single one is to be tested.')
+    rss_test.add_argument('-i', '--index', type=int, help = 'Index of the RSS if a single one is to be tested.')
+    rss_test.add_argument('-d', '--details', action='store_true', help = 'Show detailed description for each article instead of only titles.')
 
 
     #
@@ -150,7 +153,7 @@ def main(command_line=None):
     )
     scrape_test.add_argument('site', type=str, help = 'Name of the chosen website.')
     scrape_test.add_argument('-c', '--class', type=str, help = 'Class name if a single one is to be tested.')
-    scrape_test.add_argument('-i', '--index', type=str, help = 'Index of the class if a single one is to be tested.')
+    scrape_test.add_argument('-i', '--index', type=int, help = 'Index of the class if a single one is to be tested.')
 
     # display
     scrape_display = scrape_subparsers.add_parser(
@@ -159,7 +162,7 @@ def main(command_line=None):
     )
     scrape_display.add_argument('site', type=str, help = 'Name of the chosen website.')
     scrape_display.add_argument('-c', '--class', type=str, help = 'Class name if a single one is to be scraped.')
-    scrape_display.add_argument('-i', '--index', type=str, help = 'Index of the class if a single one is to be scraped.')
+    scrape_display.add_argument('-i', '--index', type=int, help = 'Index of the class if a single one is to be scraped.')
 
     # find
     scrape_find = scrape_subparsers.add_parser(
@@ -223,11 +226,11 @@ def main(command_line=None):
         case 'rss':
             match args.action:
                 case 'list':
-                    print('rss list')
+                    interface.rss_list(args.site)
                 case 'add':
-                    print('rss add')
+                    interface.rss_add(args.site, args.url, args.setdesc)
                 case 'test':
-                    print('rss test')
+                    interface.rss_test(args.site, args.url, args.index, args.details)
 
         case 'scrape':
             match args.action:

@@ -110,6 +110,7 @@ class WebParser:
             else:
                 self.sites_dict[site_name]['rss_urls'].append(rss_url)
                 self.save_json()
+                print('RSS url successfully added.')
         else:
             print('Site name not registered!')
 
@@ -200,20 +201,37 @@ class WebParser:
     # RSS feeds
     #
 
-    def get_rss(self, site_name):
+    def get_rss(self, url, list_titles=[], feed_list=[]):
+        d = feedparser.parse(url)
+        for entry in d.entries:
+            if not entry.title in list_titles:
+                feed_list = feed_list + [{
+                    'title': entry.title,
+                    'desc': entry.description,
+                }]
+                list_titles.append(entry.title)
+        return list_titles, feed_list
+
+
+    def get_rss_site(self, site_name, url='', index=None):
         rss_urls = self.sites_dict[site_name]['rss_urls']
-        temp_list_titles = []
+        list_titles = []
         feed_list = []
-        for url in rss_urls:
-            d = feedparser.parse(url)
-            for entry in d.entries:
-                if not entry.title in temp_list_titles:
-                    feed_list = feed_list + [{
-                        'title': entry.title,
-                        'desc': entry.description,
-                    }]
-                    temp_list_titles.append(entry.title)
-        return feed_list
+        if url:
+            if not url in rss_urls:
+                print('Note that the given URL is not registered for this news site.')
+            list_titles, feed_list = self.get_rss(url, list_titles, feed_list)
+        elif index:
+            if 0<=index<len(rss_urls):
+                url = rss_urls[index]
+                list_titles, feed_list = self.get_rss(self, url, list_titles, feed_list)
+            else:
+                print('The URL index given is out of bounds.')
+                return 0
+        else:
+            for url in rss_urls:
+                list_titles, feed_list = self.get_rss(url, list_titles, feed_list)
+        return list_titles, feed_list
     
     
     def get_all_rss(self):

@@ -71,14 +71,29 @@ class Interface:
     # RSS
     #
 
-    def rss_list(self):
-        return 0
+    def rss_list(self, site):
+        if not self.valid_site(site):
+            print('Please enter a valid site name.')
+            return 0
+        url_list = self.web_parser.sites_dict[site]['rss_urls']
+        for i in range(len(url_list)):
+            print(str(i) + ':\t' + url_list[i])
 
-    def rss_add(self):
-        return 0
+    def rss_add(self, site, url, set_desc=False):
+        if not self.valid_site(site):
+            print('Please enter a valid site name.')
+            return 0
+        self.web_parser.add_rss(site, url, set_desc)
 
-    def rss_test(self):
-        return 0
+    def rss_test(self, site, url='', index=None, details=False):
+        if not self.valid_site(site):
+            print('Please enter a valid site name.')
+            return 0
+        list_titles, feed_list = self.web_parser.get_rss_site(site, url, index)
+        for d in feed_list:
+            print(d['title'])
+            if details:
+                print(d['desc'])
 
     #
     # Scrape
