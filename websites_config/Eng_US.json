@@ -1,0 +1,9 @@
+{
+    "lemonde": {
+        "category": "news-fr",
+        "desc": "test description lskng",
+        "rss_urls": [],
+        "scrape_classes": [],
+        "url": "https://www.lemonde.fr/"
+    }
+}

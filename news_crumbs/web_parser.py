@@ -36,10 +36,8 @@ class WebParser:
         if not os.path.exists(self.json_file):
             self.sites_dict = {}
             self.save_json()
-            print('No websites registered yet.')
         else:
             self.read_json()
-            print('The following websites are registered: ', list(self.sites_dict.keys()))
     
 
     #
@@ -77,6 +75,13 @@ class WebParser:
             return 0
     
 
+    def update_site_name(self, name, newname, auto_save=True):
+        self.sites_dict[newname] = self.sites_dict[name]
+        del self.sites_dict[name]
+        if auto_save:
+            self.save_json()
+
+
     def update_site(self, name, key, value, auto_save=True):
         self.sites_dict[name][key] = value
         if auto_save:
@@ -95,8 +100,11 @@ class WebParser:
             print('Site name not registered!')
     
 
-    def add_rss(self, site_name, rss_url):
+    def add_rss(self, site_name, rss_url, change_desc=False):
         if site_name in list(self.sites_dict.keys()):
+            if change_desc:
+                d = feedparser.parse(rss_url)
+                self.update_site(site_name, 'desc', d.feed.title)
             if rss_url in self.sites_dict[site_name]['rss_urls']:
                 print('RSS URL is already saved.')
             else:
@@ -198,8 +206,6 @@ class WebParser:
         feed_list = []
         for url in rss_urls:
             d = feedparser.parse(url)
-            if not self.sites_dict[site_name]['desc']:
-                self.update_site(site_name, 'desc', d.feed.title)
             for entry in d.entries:
                 if not entry.title in temp_list_titles:
                     feed_list = feed_list + [{

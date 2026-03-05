@@ -1,5 +1,5 @@
 import argparse
-from news_crumbs.interface import Interface
+from news_crumbs import *
 
 '''
 LIST OF FUNCTIONALITIES:
@@ -8,8 +8,8 @@ newscrumbs
         list --details
         display [name]
         show [name]
-        add [url] --name --desc --category (display autoname)
-        edit name --newname --desc --category
+        add [url] --name --description --category (display autoname)
+        edit name --newname --description --category
     rss
         list [site]
         add [site] [rss_url]
@@ -71,7 +71,7 @@ def main(command_line=None):
     )
     site_add.add_argument('url', type=str, help = 'URL of the website to be added.')
     site_add.add_argument('-n', '--name', type=str, help = 'Name of the website to be added.')
-    site_add.add_argument('-d', '--descrition', type=str, help = 'Description of the website to be added.')
+    site_add.add_argument('-d', '--description', type=str, help = 'Description of the website to be added.')
     site_add.add_argument('-c', '--category', type=str, help = 'Category of the website to be added.')
 
     # edit
@@ -81,7 +81,7 @@ def main(command_line=None):
     )
     site_edit.add_argument('name', help = 'Name of the website to be edited.')
     site_edit.add_argument('-n', '--newname', type=str, help = 'New name of the website.')
-    site_edit.add_argument('-d', '--descrition', type=str, help = 'New description of the website.')
+    site_edit.add_argument('-d', '--description', type=str, help = 'New description of the website.')
     site_edit.add_argument('-c', '--category', type=str, help = 'New category of the website.')
 
 

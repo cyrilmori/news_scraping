@@ -1,7 +1,7 @@
-from web_parser import WebParser
-from preprocess import process_data_all_sites
-from compare import flatten_all_sites, get_common_words, get_word_freq_from_lexicon, filter_only_keywords
-from compare_nlp import translate_all_text, filter_keywords_all_sites, find_common_keywords, find_articles_with_keywords, deconcat_all_text
+from .web_parser import WebParser
+from .preprocess import process_data_all_sites
+from .compare import flatten_all_sites, get_common_words, get_word_freq_from_lexicon, filter_only_keywords
+from .compare_nlp import translate_all_text, filter_keywords_all_sites, find_common_keywords, find_articles_with_keywords, deconcat_all_text
 
 
 class Interface:
@@ -10,7 +10,7 @@ class Interface:
     keyword_list = []
 
     def __init__(self):
-        self.web_parser = WebParser('En')
+        self.web_parser = WebParser('Eng_US')
 
 
     #
@@ -54,12 +54,14 @@ class Interface:
             print('Please enter a valid site name.')
             return 0
         if description:
-            self.web_parser.update_site(name, 'description', description)
+            self.web_parser.update_site(name, 'desc', description)
+            print("Description changed to " + description)
         if category:
             self.web_parser.update_site(name, 'category', category)
+            print("Category changed to " + category)
         if newname:
-            self.web_parser.sites_dict[newname] = self.web_parser.sites_dict[name]
-            del self.web_parser.sites_dict[name]
+            self.web_parser.update_site_name(name, newname)
+            print("Name changed to " + newname)
         if not newname and not description and not category:
             print('Please input a new name, description or category in order to edit the chosen site.')
             return 0
