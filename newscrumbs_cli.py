@@ -12,13 +12,13 @@ newscrumbs
         edit name --newname --description --category
     rss
         list [site]
-        add [site] [rss_url]
+        add [site] [rss_url] --setdesc
         test [site] --url --index
     scrape
         list [site]
-        add [site] [scrape_class]
-        test --class --index
-        display --class --index
+        add [site] [scrapeclass]
+        test [site] --scrapeclass --index
+        display [site] --scrapeclass --index
         find [site] [string]
     keywords
         get --scrape (scrape and save news from all sites then find common keywords and show them)
@@ -144,15 +144,15 @@ def main(command_line=None):
         help = 'Add an scrape flux to a chosen website.'
     )
     scrape_add.add_argument('site', type=str, help = 'Name of the chosen website.')
-    scrape_add.add_argument('class', type=str, help = 'Class name for the tags to be scraped.')
+    scrape_add.add_argument('scrapeclass', type=str, help = 'Class name for the tags to be scraped.')
 
     # test
     scrape_test = scrape_subparsers.add_parser(
         'test',
-        help = 'Test scrape flux for a given website.'
+        help = 'Test scrape flux for a given website by printing all scraped text.'
     )
     scrape_test.add_argument('site', type=str, help = 'Name of the chosen website.')
-    scrape_test.add_argument('-c', '--class', type=str, help = 'Class name if a single one is to be tested.')
+    scrape_test.add_argument('-c', '--scrapeclass', type=str, help = 'Class name if a single one is to be tested.')
     scrape_test.add_argument('-i', '--index', type=int, help = 'Index of the class if a single one is to be tested.')
 
     # display
@@ -161,7 +161,7 @@ def main(command_line=None):
         help = 'Display the chosen website in browser and strike all text scraped by the registered classes.'
     )
     scrape_display.add_argument('site', type=str, help = 'Name of the chosen website.')
-    scrape_display.add_argument('-c', '--class', type=str, help = 'Class name if a single one is to be scraped.')
+    scrape_display.add_argument('-c', '--scrapeclass', type=str, help = 'Class name if a single one is to be scraped.')
     scrape_display.add_argument('-i', '--index', type=int, help = 'Index of the class if a single one is to be scraped.')
 
     # find
@@ -235,15 +235,15 @@ def main(command_line=None):
         case 'scrape':
             match args.action:
                 case 'list':
-                    print('scrape list')
+                    interface.scrape_list(args.site)
                 case 'display':
-                    print('scrape display')
+                    interface.scrape_display(args.site, args.scrapeclass, args.index)
                 case 'test':
-                    print('scrape test')
+                    interface.scrape_test(args.site, args.scrapeclass, args.index)
                 case 'add':
-                    print('scrape add')
+                    interface.scrape_add(args.site, args.scrapeclass)
                 case 'find':
-                    print('scrape find')
+                    interface.scrape_find(args.site, args.string)
 
         case 'keyword':
             match args.action:

@@ -183,15 +183,20 @@ class WebParser:
     def get_strings_from_class(self, class_str):
         tags_list = self.snapshot_soup.find_all(class_=class_str)
         return [{'title': tag.text} for tag in tags_list]
+    
+
+    def scrape_site(self, site_name):
+        self.snapshot_site(site_name)
+        titles_list = []
+        for class_str in self.sites_dict[site_name]['scrape_classes']:
+            titles_list = titles_list + self.get_strings_from_class(class_str)
+        return titles_list
 
 
     def scrape_all_news(self):
         titles_dict = {}
         for site_name in list(self.sites_dict.keys()):
-            self.snapshot_site(site_name)
-            titles_list = []
-            for class_str in self.sites_dict[site_name]['scrape_classes']:
-                titles_list = titles_list + self.get_strings_from_class(class_str)
+            titles_list = self.scrape_site(site_name, titles_dict)
             titles_dict.update({site_name: titles_list})
         self.scraped_dict = titles_dict
         return titles_dict

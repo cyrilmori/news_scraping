@@ -99,20 +99,68 @@ class Interface:
     # Scrape
     #
 
-    def scrape_list(self):
-        return 0
+    def scrape_list(self, site):
+        if not self.valid_site(site):
+            print('Please enter a valid site name.')
+            return 0
+        class_list = self.web_parser.sites_dict[site]['scrape_classes']
+        for i in range(len(class_list)):
+            print(str(i) + ':\t' + class_list[i])
 
-    def scrape_display(self):
-        return 0
+    def scrape_display(self, site, scrape_class, index):
+        if not self.valid_site(site):
+            print('Please enter a valid site name.')
+            return 0
+        self.web_parser.snapshot_site(site)
+        class_list = self.web_parser.sites_dict[site]['scrape_classes']
+        if scrape_class:
+            if not scrape_class in class_list:
+                print('Note that the given class is not registered for this news site.')
+            self.web_parser.highlight_title(scrape_class)
+        elif index:
+            if 0<=index<range(len(class_list)):
+                self.web_parser.highlight_title(class_list[index])
+            else:
+                print('The class index given is out of bounds.')
+                return 0
+        else:
+            for i in range(len(class_list)):
+                self.web_parser.highlight_title(class_list[i])
+        self.web_parser.view_in_browser()
 
-    def scrape_test(self):
-        return 0
+    def scrape_test(self, site, scrape_class, index):
+        if not self.valid_site(site):
+            print('Please enter a valid site name.')
+            return 0
+        self.web_parser.snapshot_site(site)
+        class_list = self.web_parser.sites_dict[site]['scrape_classes']
+        if scrape_class:
+            if not scrape_class in class_list:
+                print('Note that the given class is not registered for this news site.')
+            title_list = self.web_parser.get_strings_from_class(scrape_class)
+        elif index:
+            if 0<=index<range(len(class_list)):
+                title_list = self.web_parser.get_strings_from_class(class_list[index])
+            else:
+                print('The class index given is out of bounds.')
+                return 0
+        else:
+            title_list = self.web_parser.scrape_site(site)
+        for entry in title_list:
+            print(entry['title'])
 
-    def scrape_add(self):
-        return 0
+    def scrape_add(self, site, scrape_class):
+        if not self.valid_site(site):
+            print('Please enter a valid site name.')
+            return 0
+        self.web_parser.add_site_scrape_class(site, scrape_class)
 
-    def scrape_find(self):
-        return 0
+    def scrape_find(self, site, string):
+        if not self.valid_site(site):
+            print('Please enter a valid site name.')
+            return 0
+        self.web_parser.snapshot_site(site)
+        self.web_parser.print_classes_from_string(string)
 
     #
     # Keywords
