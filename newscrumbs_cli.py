@@ -195,14 +195,14 @@ def main(command_line=None):
         'files',
         help = 'List all saved text files (and their indices) containing articles and keywords.'
     )
-    keyword_list.add_argument('-d', '--date', type=str, help = 'Time bracket for the files listed in format "YYYY-mm-dd_YYYY-mm-dd". An ommitted date is considered as an open bound.')
+    keyword_files.add_argument('-d', '--date', type=str, help = 'Time bracket for the files listed in format "YYYY-mm-dd_YYYY-mm-dd". An ommitted date is considered as an open bound.')
 
     # list
     keyword_list = keyword_subparsers.add_parser(
         'list',
         help = 'List all saved keywords and their indices for a chosen text file.'
     )
-    keyword_list.add_argument('-f', '--file', type=str, help = 'Index of the file which should be loaded.')
+    keyword_list.add_argument('-f', '--file', type=int, help = 'Index of the file which should be loaded.')
 
     # show
     keyword_show = keyword_subparsers.add_parser(
@@ -256,7 +256,9 @@ def main(command_line=None):
         case 'keyword':
             match args.action:
                 case 'list':
-                    interface.keyword_list(args.date)
+                    interface.keyword_list(args.file)
+                case 'files':
+                    interface.keyword_files(args.date)
                 case 'get':
                     interface.keyword_get(args.scrape)
                 case 'show':
