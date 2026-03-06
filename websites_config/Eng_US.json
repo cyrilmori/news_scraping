@@ -9,5 +9,14 @@
             "article__title-label"
         ],
         "url": "https://www.lemonde.fr/"
+    },
+    "mediapart": {
+        "category": null,
+        "desc": null,
+        "rss_urls": [
+            "https://www.mediapart.fr/articles/feed"
+        ],
+        "scrape_classes": [],
+        "url": "https://www.mediapart.fr/"
     }
 }

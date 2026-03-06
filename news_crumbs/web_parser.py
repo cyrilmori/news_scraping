@@ -242,6 +242,6 @@ class WebParser:
     def get_all_rss(self):
         rss_dict = {}
         for site_name in list(self.sites_dict.keys()):
-            feed_list = self.get_rss(site_name)
+            _, feed_list = self.get_rss_site(site_name)
             rss_dict.update({site_name: feed_list})
         return rss_dict

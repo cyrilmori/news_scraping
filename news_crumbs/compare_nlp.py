@@ -126,10 +126,13 @@ def find_freq_keywords(keyword_dict):
 
 
 def find_common_keywords(keyword_dict):
+    if len(list(keyword_dict.keys())) < 2:
+        print('Need at least 2 difference news sites to be able to compare keywords!')
+        return 0
     freq_list, word_vector = find_freq_keywords(keyword_dict)
     common_words = []
     for i in range(len(word_vector)):
-        if sum( [val != 0 for val in freq_list[i]] ) >= 3:
+        if sum( [val != 0 for val in freq_list[i]] ) >= 2:
             common_words.append(word_vector[i])
     return common_words
 

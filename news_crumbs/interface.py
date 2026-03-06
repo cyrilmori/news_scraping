@@ -1,3 +1,6 @@
+import numpy as np
+from datetime import datetime
+import os, io, json
 from .web_parser import WebParser
 from .preprocess import process_data_all_sites
 from .compare import flatten_all_sites, get_common_words, get_word_freq_from_lexicon, filter_only_keywords
@@ -166,12 +169,80 @@ class Interface:
     # Keywords
     #
 
-    def keyword_list(self):
-        return 0
+    def keyword_files(self, timeframe=''):
+        list_files = os.listdir('.\\saved_keywords\\')
+        start, end = None, None
+        if timeframe:
+            start, end = timeframe.split('_')
+            if start:
+                start = datetime.strptime(start, '%Y-%m-%d')
+            if end:
+                end = datetime.strptime(end, '%Y-%m-%d')
+        for i in range(len(list_files)):
+            flag = True
+            file_date_str = list_files[i].split('.')[0]
+            file_date = datetime.strptime(file_date_str, '%Y-%m-%d_%H-%M-%S')
+            if start and file_date < start:
+                flag = False
+            if end and file_date > end:
+                flag = False
+            if flag:
+                print(str(i) + ':\t' + list_files[i])
 
-    def keyword_get(self):
-        return 0
+    def keyword_list(self, file_index=None):
+        if not file_index:
+            file_index = -1
+        list_files = os.listdir('.\\saved_keywords\\')
+        file_name = list_files[file_index]
+        json_file = '.\\saved_keywords\\' + file_name
+        with io.open(json_file, 'r', encoding='utf-8') as f:
+            loaded_dict = json.load(f)
+            keywords = loaded_dict['keywords']
+            for i in range(len(keywords)):
+                print(str(i) + ':\t' + keywords[i])
 
-    def keyword_show(self):
-        return 0
+    def keyword_get(self, scrape=False):
+        rss_dict = self.web_parser.get_all_rss()
+        print('Articles scraped.')
+        trans_title_dict = translate_all_text(rss_dict)
+        print('Articles translated.')
+        trans_keywords = filter_keywords_all_sites(trans_title_dict)
+        common_keywords = find_common_keywords(trans_keywords)
+        keyword_occurences = find_articles_with_keywords(trans_title_dict, common_keywords)
+        print('Keywords found.')
+        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        save_dict = {
+            'articles': deconcat_all_text(trans_title_dict),
+            'keywords': common_keywords,
+            'occurences': {k: v.tolist() for k, v in zip( list(keyword_occurences.keys()), list(keyword_occurences.values()) )}
+        }
+        json_file = '.\\saved_keywords\\' + timestamp + '.json'
+        with io.open(json_file, 'w', encoding='utf-8') as f:
+            json.dump(save_dict, f, ensure_ascii=False, indent=4, sort_keys=True)
+            print("Keywords saved.")
+
+    def keyword_show(self, keyword, file_index=None, site='', desc=False):
+        if not file_index:
+            file_index = -1
+        list_files = os.listdir('.\\saved_keywords\\')
+        file_name = list_files[file_index]
+        json_file = '.\\saved_keywords\\' + file_name
+        with io.open(json_file, 'r', encoding='utf-8') as f:
+            loaded_dict = json.load(f)
+            try:
+                word_index = loaded_dict['keywords'].index(keyword)
+            except:
+                print('Not a valid keyword!')
+                return 0
+            for site in list(loaded_dict['articles']):
+                print('\nWEBSITE: ' + site + '\n\n')
+                list_articles = loaded_dict['articles'][site]
+                list_occurences = np.array(loaded_dict['occurences'][site])[:,word_index]
+                for art, freq in zip(list_articles, list_occurences):
+                    if freq > 0:
+                        for text in art:
+                            print(text)
+                        print('')
+
+            
 

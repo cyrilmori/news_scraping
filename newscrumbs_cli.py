@@ -186,23 +186,31 @@ def main(command_line=None):
     # get
     keyword_get = keyword_subparsers.add_parser(
         'get',
-        help = 'Get all news data, save it to RAM then identify common keywords.'
+        help = 'Get all news data then identify common keywords and save it all to a text file.'
     )
-    keyword_get.add_argument('-s', '--scrape', type=str, help = 'Also scrape titles using registered classes instead of relying only on RSS fluxes.')
-    # keyword_get.add_argument('-w', '--write', type=str, help = 'Save all scraped data to a text file.')
+    keyword_get.add_argument('-s', '--scrape', action='store_true', help = 'Also scrape titles using registered classes instead of relying only on RSS fluxes.')
+
+    # files
+    keyword_files = keyword_subparsers.add_parser(
+        'files',
+        help = 'List all saved text files (and their indices) containing articles and keywords.'
+    )
+    keyword_list.add_argument('-d', '--date', type=str, help = 'Time bracket for the files listed in format "YYYY-mm-dd_YYYY-mm-dd". An ommitted date is considered as an open bound.')
 
     # list
     keyword_list = keyword_subparsers.add_parser(
         'list',
-        help = 'List all registered keywords.'
+        help = 'List all saved keywords and their indices for a chosen text file.'
     )
+    keyword_list.add_argument('-f', '--file', type=str, help = 'Index of the file which should be loaded.')
 
     # show
     keyword_show = keyword_subparsers.add_parser(
         'show',
-        help = 'show keyword flux for a given website.'
+        help = 'Show all articles associated to a keyword in a given file.'
     )
     keyword_show.add_argument('keyword', type=str, help = 'Keyword used to filter which articles are shown.')
+    keyword_show.add_argument('-f', '--file', type=str, help = 'Index of the file with keywords to be loaded. Default is the last saved file.')
     keyword_show.add_argument('-s', '--site', type=str, help = 'Name of the chosen website if a single one is to be shown.')
     keyword_show.add_argument('-d', '--description', type=str, help = 'Print also articles\' descriptions instead of just titles.')
 
@@ -248,11 +256,11 @@ def main(command_line=None):
         case 'keyword':
             match args.action:
                 case 'list':
-                    print('keyword list')
+                    interface.keyword_list(args.date)
                 case 'get':
-                    print('keyword get')
+                    interface.keyword_get(args.scrape)
                 case 'show':
-                    print('keyword show')
+                    interface.keyword_show(args.keyword, args.file, args.site, args.description)
 
 
 
