@@ -1,31 +1,6 @@
 import argparse
 from news_crumbs import *
 
-'''
-LIST OF FUNCTIONALITIES:
-newscrumbs
-    site
-        list --details
-        display [name]
-        show [name]
-        add [url] --name --description --category (display autoname)
-        edit name --newname --description --category
-    rss
-        list [site]
-        add [site] [rss_url] --setdesc
-        test [site] --url --index
-    scrape
-        list [site]
-        add [site] [scrapeclass]
-        test [site] --scrapeclass --index
-        display [site] --scrapeclass --index
-        find [site] [string]
-    keywords
-        get --scrape (scrape and save news from all sites then find common keywords and show them)
-        list (lists all keywords registered)
-        show [keyword] --site --description (shows articles associated to keyword)
-'''
-
 
 def main(command_line=None):
     parser = argparse.ArgumentParser(
@@ -109,7 +84,7 @@ def main(command_line=None):
     )
     rss_add.add_argument('site', type=str, help = 'Name of the chosen website.')
     rss_add.add_argument('url', type=str, help = 'URL of the RSS flux to be added.')
-    rss_add.add_argument('-d', '--setdesc', action='store_true', help = 'Set the site description to this RSS description.')
+    rss_add.add_argument('-d', '--description', action='store_true', help = 'Set the site description to this RSS description.')
 
     # test
     rss_test = rss_subparsers.add_parser(
@@ -141,7 +116,7 @@ def main(command_line=None):
     # add
     scrape_add = scrape_subparsers.add_parser(
         'add',
-        help = 'Add an scrape flux to a chosen website.'
+        help = 'Add an scrape class to a chosen website.'
     )
     scrape_add.add_argument('site', type=str, help = 'Name of the chosen website.')
     scrape_add.add_argument('scrapeclass', type=str, help = 'Class name for the tags to be scraped.')
